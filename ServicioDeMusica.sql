@@ -76,7 +76,7 @@ create table pago(
 );
 
 -- triggers y procedures
-
+--proceso alacenado para insertar un Album.
 create function insertarArtista(nombre text,apellido text,nacionalidad text,descripcion text) returns void as
 $$
 begin
@@ -117,7 +117,6 @@ $$
 LANGUAGE plpgsql;
 
 --trigger y procedure para cambiar la duracion del album cuando se ingresa una cancion.
-
 create function PA_insertar() RETURNs TRIGGER AS
 $$
 begin 

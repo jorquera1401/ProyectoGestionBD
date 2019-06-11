@@ -76,7 +76,7 @@ create table pago(
 );
 
 -- triggers y procedures
---proceso alacenado para insertar un Album.
+--proceso almacenado para insertar un Album.
 create function insertarArtista(nombre text,apellido text,nacionalidad text,descripcion text) returns void as
 $$
 begin

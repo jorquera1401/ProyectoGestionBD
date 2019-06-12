@@ -37,6 +37,7 @@ create table usuario_escucha_cancion(
 	usuario_asociado int references usuario(id) on delete restrict on update cascade,
 	cancion_asociada int references cancion(id) on delete restrict on update cascade
 );
+
 create type ty_playlist as enum('Publica','Privada');
 create table playlist(
 	id serial primary key,
@@ -46,6 +47,7 @@ create table playlist(
 	usuario_asociado integer references usuario(id) on delete restrict on update cascade
 
 );
+
 create table anadir_cancion_playlist(
 	id serial primary key,
 	playlist_asociada integer references playlist(id) on delete restrict on update cascade,
@@ -76,6 +78,24 @@ create table pago(
 );
 
 -- triggers y procedures
+--proceso almacenado para insertar playlist.
+create function insertarPlaylist(nombre text,tipo ty_playlist,usuario_asociado integer)returns void as
+$$
+begin
+	IF(tipo='') then
+		insert into playlist(nombre,usuario_asociado) values(nombre,usuario_asociado);
+	ELSE
+		insert into playlist(nombre,tipo,usuario_asociado) values(nombre,tipo,usuario_asociado);
+	end IF;
+end;
+LANGUAGE plpgsql;
+--proceso almacenado para insertar un usuario que escucha una canción.
+create function insertarUsuarioEscuchaCancion(usuario_asociado integer,cancion_asociada integer)returns void as
+$$
+begin
+	insert into usuario_escucha_cancion(usuario_asociado,cancion_asociada) values(usuario_asociado,cancion_asociada);
+end;
+LANGUAGE plpgsql;
 --proceso almacenado para insertar un Album.
 create function insertarArtista(nombre text,apellido text,nacionalidad text,descripcion text) returns void as
 $$

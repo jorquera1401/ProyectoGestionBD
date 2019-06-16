@@ -78,7 +78,29 @@ create table pago(
 );
 
 -- triggers y procedures
---proceso almacenado para insertar playlist.
+--procedimiento almacenado para insertar pago.
+create function insertarpago(total_pago integer,usuario_asociado integer)returns void as
+$$
+begin
+ insert into pago(total_pago,usuario_asociado) values(total_pago,usuario_asociado);
+end;
+LANGUAGE plpgsql;
+--procedimiento almacenado para insertar tarjeta de pago.
+create function insertartarjeta(numero_tarjeta integer,tipo ty_tarjeta,codigo_seguridad integer, fecha_vencimiento integer)returns void as
+$$
+begin
+	insert into tarjeta values(numero_tarjeta,tipo,codigo_seguridad,fecha_vencimiento);
+end;
+LANGUAGE plpgsql;
+--procedimiento almacenado para insertar a la tabla cuando un usuario añade una cancion a una playlist.
+create function insertaranadircancionplaylist(playlist_asociada integer,usuario_asociado integer,cancion_asociada integer) returns void as
+$$
+begin
+	insert into anadir_cancion_playlist(playlist_asociada,usuario_asociado,cancion_asociada) values(playlist_asociada,usuario_asociado,cancion_asociada);
+end;
+LANGUAGE plpgsql;
+
+--procedimiento almacenado para insertar playlist.
 create function insertarPlaylist(nombre text,tipo ty_playlist,usuario_asociado integer)returns void as
 $$
 begin
@@ -128,10 +150,19 @@ end;
 $$
 LANGUAGE plpgsql;
 --Proceso almacenado para insertar un usuario.
-create function insertarusuario(nombre text,correo text,contrasena text,pais text,sexo tipo_sexo)returns void as
+create function insertarusuario(nombre text,correo text,contrasena text,pais text,sexo tipo_sexo,tipo text)returns void as
 $$
+declare
+id_usuario integer;
+--select current_date + interval '1 month' ;
 begin
-	insert into usuario(nombre,correo,contrasena,pais,sexo) values(nombre,correo,contrasena,pais,sexo);
+	IF(tipo=='Premium') then
+		insert into usuario(nombre,correo,contrasena,pais,sexo) values(nombre,correo,contrasena,pais,sexo);
+		id_usuario := execute ''select usuario.id from usuario where usuario.nombre = nombre;'';
+
+		insert into usuario_premium(id_usuario,) values();
+
+	
 end;
 $$
 LANGUAGE plpgsql;

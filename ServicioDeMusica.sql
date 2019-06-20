@@ -33,14 +33,7 @@ create table usuario(
 	sexo tipo_sexo not null
 );
 
-create table usuario_free(
-	id_usuario integer primary key references usuario(id) on delete restrict on update cascade
-);
-create table usuario_premium(
-	id_usuario integer primary key references usuario(id) on delete restrict on update cascade,
-	fecha_renovacion date not null,
-	tarjeta_asociada integer references tarjeta(numero_tarjeta) on delete restrict on update cascade
-);
+
 create table usuario_escucha_cancion(
 	id serial primary key,
 	usuario_asociado int references usuario(id) on delete restrict on update cascade,
@@ -69,6 +62,15 @@ create table tarjeta(
 	tipo_tarjeta ty_tarjeta not null,
 	codigo_seguridad integer not null UNIQUE,
 	fecha_vencimiento date not null
+);
+
+create table usuario_free(
+	id_usuario integer primary key references usuario(id) on delete restrict on update cascade
+);
+create table usuario_premium(
+	id_usuario integer primary key references usuario(id) on delete restrict on update cascade,
+	fecha_renovacion date not null,
+	tarjeta_asociada integer references tarjeta(numero_tarjeta) on delete restrict on update cascade
 );
 
 create table pago(

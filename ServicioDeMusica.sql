@@ -110,7 +110,7 @@ $$
 LANGUAGE plpgsql;
 
 --procedimiento almacenado para insertar playlist.
-create function insertarPlaylist(nombre text,tipo ty_playlist,usuario_asociado integer)returns void as
+create function insertarPlaylist(nombre text,tipo text,usuario_asociado integer)returns void as
 $$
 begin
 	IF(tipo='') then

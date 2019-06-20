@@ -32,6 +32,8 @@ create table usuario(
 	pais text default null,
 	sexo tipo_sexo not null
 );
+
+
 create table usuario_escucha_cancion(
 	id serial primary key,
 	usuario_asociado int references usuario(id) on delete restrict on update cascade,
@@ -70,6 +72,7 @@ create table usuario_premium(
 	fecha_renovacion date not null,
 	tarjeta_asociada integer references tarjeta(numero_tarjeta) on delete restrict on update cascade
 );
+
 create table pago(
 	id serial primary key,
 	fecha TIMESTAMP DEFAULT now(),--se setea default la fecha actual del sistema
@@ -84,24 +87,30 @@ $$
 begin
  insert into pago(total_pago,usuario_asociado) values(total_pago,usuario_asociado);
 end;
+$$
 LANGUAGE plpgsql;
+
 --procedimiento almacenado para insertar tarjeta de pago.
 create function insertartarjeta(numero_tarjeta integer,tipo ty_tarjeta,codigo_seguridad integer, fecha_vencimiento integer)returns void as
 $$
 begin
 	insert into tarjeta values(numero_tarjeta,tipo,codigo_seguridad,fecha_vencimiento);
 end;
+$$
 LANGUAGE plpgsql;
+
+
 --procedimiento almacenado para insertar a la tabla cuando un usuario añade una cancion a una playlist.
 create function insertaranadircancionplaylist(playlist_asociada integer,usuario_asociado integer,cancion_asociada integer) returns void as
 $$
 begin
 	insert into anadir_cancion_playlist(playlist_asociada,usuario_asociado,cancion_asociada) values(playlist_asociada,usuario_asociado,cancion_asociada);
 end;
+$$
 LANGUAGE plpgsql;
 
 --procedimiento almacenado para insertar playlist.
-create function insertarPlaylist(nombre text,tipo ty_playlist,usuario_asociado integer)returns void as
+create function insertarPlaylist(nombre text,tipo text,usuario_asociado integer)returns void as
 $$
 begin
 	IF(tipo='') then
@@ -110,15 +119,21 @@ begin
 		insert into playlist(nombre,tipo,usuario_asociado) values(nombre,tipo,usuario_asociado);
 	end IF;
 end;
+$$
 LANGUAGE plpgsql;
+
+
 --proceso almacenado para insertar un usuario que escucha una canción.
 create function insertarUsuarioEscuchaCancion(usuario_asociado integer,cancion_asociada integer)returns void as
 $$
 begin
 	insert into usuario_escucha_cancion(usuario_asociado,cancion_asociada) values(usuario_asociado,cancion_asociada);
 end;
+$$
 LANGUAGE plpgsql;
---proceso almacenado para insertar un Album.
+
+
+--proceso almacenado para insertar un Artista
 create function insertarArtista(nombre text,apellido text,nacionalidad text,descripcion text) returns void as
 $$
 begin
@@ -130,6 +145,7 @@ begin
 end;
 $$
 LANGUAGE plpgsql;
+
 --Proceso almacenado para insertar un Album.
 create function insertarAlbum(nombre text,fecha_de_lanzamiento date,duracion integer,sello text,
 	genero text,artista_asociado integer)returns void as 
@@ -140,6 +156,7 @@ begin
 end;
 $$
 LANGUAGE plpgsql;
+
 --Proceso almacenado para insertar una canción.
 create function insertarcancion(nombre text,duracion integer,explicito boolean,
 	album_asociado integer)returns void as
@@ -149,23 +166,28 @@ begin
 end;
 $$
 LANGUAGE plpgsql;
+
+
 --Proceso almacenado para insertar un usuario.
-create function insertarusuario(nombre text,correo text,contrasena text,pais text,sexo tipo_sexo,tipo text)returns void as
+create function insertarusuario(nombre text,correo text,contrasena text,pais text,sexo tipo_sexo,tipo text, tarjeta_numero integer)returns void as
 $$
 declare
 id_usuario integer;
---select current_date + interval '1 month' ;
 begin
-	IF(tipo=='Premium') then
-		insert into usuario(nombre,correo,contrasena,pais,sexo) values(nombre,correo,contrasena,pais,sexo);
-		id_usuario := execute ''select usuario.id from usuario where usuario.nombre = nombre;'';
-
-		insert into usuario_premium(id_usuario,) values();
-
 	
+	insert into usuario(nombre,correo,contrasena,pais,sexo) values(nombre,correo,contrasena,pais,sexo);	
+	execute format('select usuario.id from usuario where usuario.nombre = nombre;')
+	into id_usuario;
+	IF (tipo='Premium') then
+		insert into usuario_premium(id_usuario,fecha_renovacion, tarjeta_asociada) values(id_usuario, (select current_date + interval '1 month'),tarjeta_numero);
+	else
+		insert into usuario_free values(id_usuario);
+	end if;	
 end;
 $$
 LANGUAGE plpgsql;
+
+
 
 --trigger y procedure para cambiar la duracion del album cuando se ingresa una cancion.
 create function PA_insertar() RETURNs TRIGGER AS

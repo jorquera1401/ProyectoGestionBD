@@ -38,5 +38,11 @@ end;
 $$
 LANGUAGE plpgsql;
 
-
+create function actualizar_playlist(id_playlist integer,nombre_nuevo text,tipo_nuevo ty_playlist,usuario_asociado_nuevo integer)returns void as
+$$
+begin
+	update playlist set nombre = nombre_nuevo,tipo = tipo_nuevo, usuario_asociado = usuario_asociado_nuevo where playlist.id = id_playlist;
+end;
+$$
+LANGUAGE plpgsql;
 	

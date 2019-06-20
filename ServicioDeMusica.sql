@@ -58,7 +58,7 @@ create table anadir_cancion_playlist(
 );
 create type ty_tarjeta as enum('Visa','Mastercard');
 create table tarjeta(
-	numero_tarjeta integer primary key,
+	numero_tarjeta bigint primary key,
 	tipo_tarjeta ty_tarjeta not null,
 	codigo_seguridad integer not null UNIQUE,
 	fecha_vencimiento date not null
@@ -70,7 +70,7 @@ create table usuario_free(
 create table usuario_premium(
 	id_usuario integer primary key references usuario(id) on delete restrict on update cascade,
 	fecha_renovacion date not null,
-	tarjeta_asociada integer references tarjeta(numero_tarjeta) on delete restrict on update cascade
+	tarjeta_asociada bigint references tarjeta(numero_tarjeta) on delete restrict on update cascade
 );
 
 create table pago(
@@ -91,7 +91,7 @@ $$
 LANGUAGE plpgsql;
 
 --procedimiento almacenado para insertar tarjeta de pago.
-create function insertartarjeta(numero_tarjeta integer,tipo ty_tarjeta,codigo_seguridad integer, fecha_vencimiento integer)returns void as
+create function insertartarjeta(numero_tarjeta bigint,tipo ty_tarjeta,codigo_seguridad integer, fecha_vencimiento integer)returns void as
 $$
 begin
 	insert into tarjeta values(numero_tarjeta,tipo,codigo_seguridad,fecha_vencimiento);
@@ -171,7 +171,7 @@ LANGUAGE plpgsql;
 
 
 --Proceso almacenado para insertar un usuario.
-create function insertarusuario(nombre text,correo text,contrasena text,pais text,sexo tipo_sexo,tipo text, tarjeta_numero integer)returns void as
+create function insertarusuario(nombre text,correo text,contrasena text,pais text,sexo tipo_sexo,tipo text, tarjeta_numero bigint)returns void as
 $$
 declare
 id_usuario integer;

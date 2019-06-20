@@ -1,7 +1,8 @@
+--actualiza la duracion del album cuando inserto cancion
 create function pa_actualizar_duracion() returns trigger as 
 $$
 begin
-    update album set album.duracion = (album.duracion+new.duracion)
+    update album set duracion = (duracion+new.duracion)
     where new.album_asociado = album.id;
     return new;
 end;

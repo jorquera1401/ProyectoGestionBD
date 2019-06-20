@@ -178,7 +178,7 @@ begin
 	insert into usuario(nombre,correo,contrasena,pais,sexo) values(nombre,correo,contrasena,pais,sexo);	
 	execute format('select usuario.id from usuario where usuario.nombre = nombre;')
 	into id_usuario;
-	IF(tipo=='Premium') then
+	IF (tipo='Premium') then
 		insert into usuario_premium(id_usuario,fecha_renovacion, tarjeta_asociada) values(id_usuario, (select current_date + interval '1 month'),tarjeta_numero);
 	else
 		insert into usuario_free values(id_usuario);

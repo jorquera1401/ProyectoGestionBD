@@ -4,8 +4,6 @@ select insertarcancion('real love', 120, false,1);
 select insertarcancion('twist and shout', 130, false,1);
 select insertarcancion('revolution', 180, false,1);
 
-select insertartarjeta(5544332211,'Visa', 222,'2025-01-01');
-select insertarusuario('miguel', 'jorquera1401@aol.co.uk','1234', 'chile', 'masculino', 'Premium',5544332211);
-select insertarusuario('javier', 'jaliaga@aol.co.uk','1234', 'chile', 'masculino', 'Free',0);
-
-select * from tarjeta;
+select insertartarjeta(5544,'Visa', 222,'2025-01-01');
+select insertarusuario('Miguel', 'jorquera111@aol.co.uk', 'conca','chile','M','Premium', 112233);
+select insertarusuario('javier', 'jaliaga@aol.co.uk','1234', 'chile', 'M', 'Free',0);

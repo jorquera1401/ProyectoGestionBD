@@ -3,7 +3,8 @@ create table artista(
 	nombre text not null,
 	apellido text not null,
 	nacionalidad text not null,
-	descripcion text default 'Artista Musical'
+	descripcion text default 'Artista Musical',
+	eliminado boolean default FALSE
 );
 
 create table album(
@@ -13,7 +14,8 @@ create table album(
 	duracion integer not null default 0,
 	sello text not null,
 	genero text not null,
-	artista_asociado integer references artista(id) on delete restrict on update cascade
+	artista_asociado integer references artista(id) on delete restrict on update cascade,
+	eliminado boolean default FALSE
 );
 create table cancion(
 	id serial primary key,
@@ -21,7 +23,8 @@ create table cancion(
 	duracion integer not null,
 	num_de_reproducciones integer not null default 0,
 	explicito boolean default null,
-	album_asociado integer references album(id) on delete restrict on update cascade
+	album_asociado integer references album(id) on delete restrict on update cascade,
+	eliminado boolean default FALSE
 );
 create type tipo_sexo as enum ('M','F');
 create table usuario(
@@ -30,7 +33,8 @@ create table usuario(
 	correo text UNIQUE not null,
 	contrasena text not null,
 	pais text default null,
-	sexo tipo_sexo not null
+	sexo tipo_sexo not null,
+	eliminado boolean default FALSE
 );
 
 
@@ -46,7 +50,8 @@ create table playlist(
 	nombre text not null,
 	fecha_creacion TIMESTAMP DEFAULT now(),--se setea default la fecha actual del sistema
 	tipo ty_playlist not null default 'Publica',
-	usuario_asociado integer references usuario(id) on delete restrict on update cascade
+	usuario_asociado integer references usuario(id) on delete restrict on update cascade,
+	eliminado boolean default FALSE
 
 );
 
@@ -65,12 +70,14 @@ create table tarjeta(
 );
 
 create table usuario_free(
-	id_usuario integer primary key references usuario(id) on delete restrict on update cascade
+	id_usuario integer primary key references usuario(id) on delete restrict on update cascade,
+	eliminado boolean default FALSE
 );
 create table usuario_premium(
 	id_usuario integer primary key references usuario(id) on delete restrict on update cascade,
 	fecha_renovacion date not null,
-	tarjeta_asociada bigint references tarjeta(numero_tarjeta) on delete restrict on update cascade
+	tarjeta_asociada bigint references tarjeta(numero_tarjeta) on delete restrict on update cascade,
+	eliminado boolean default FALSE
 );
 
 create table pago(

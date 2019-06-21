@@ -98,7 +98,7 @@ $$
 LANGUAGE plpgsql;
 
 --procedimiento almacenado para insertar tarjeta de pago.
-create function insertartarjeta(numero_tarjeta bigint,tipo ty_tarjeta,codigo_seguridad integer, fecha_vencimiento integer)returns void as
+create function insertartarjeta(numero_tarjeta bigint,tipo ty_tarjeta,codigo_seguridad integer, fecha_vencimiento date)returns void as
 $$
 begin
 	insert into tarjeta values(numero_tarjeta,tipo,codigo_seguridad,fecha_vencimiento);

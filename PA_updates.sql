@@ -38,6 +38,18 @@ end;
 $$
 LANGUAGE plpgsql;
 
+create function actualizar_usuario_premium(nombre_usuario text,tarjeta_asociada_nueva bigint)returns void as
+$$
+declare
+id_usuario integer;
+begin
+	execute format('select usuario.id from usuario where usuario.nombre = nombre_usuario;')
+	into id_usuario;
+	update usuario_premium set tarjeta_asociada = tarjeta_asociada where usuario.id = id_usuario;
+end;
+$$
+LANGUAGE plpgsql;
+
 create function actualizar_playlist(id_playlist integer,nombre_nuevo text,tipo_nuevo ty_playlist,usuario_asociado_nuevo integer)returns void as
 $$
 begin
@@ -45,4 +57,19 @@ begin
 end;
 $$
 LANGUAGE plpgsql;
+
+
+create function actualizar_tarjeta(numero_tarjeta_antigua bigint,numero_tarjeta_nueva bigint,
+	tipo_tarjeta_nueva ty_tarjeta,codigo_seguridad_nueva integer,fecha_vencimiento_nueva date)returns void as
+$$
+begin
+	update tarjeta set numero_tarjeta = numero_tarjeta_nueva, tipo_tarjeta = tipo_tarjeta_nueva,
+		codigo_seguridad = codigo_seguridad_nueva,fecha_vencimiento = fecha_vencimiento_nueva where tarjeta.numero_tarjeta = numero_tarjeta_antigua;
+end;
+$$
+LANGUAGE plpgsql;
+
+
+
+
 	

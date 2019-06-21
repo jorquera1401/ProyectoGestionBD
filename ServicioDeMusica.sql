@@ -58,7 +58,7 @@ create table anadir_cancion_playlist(
 );
 create type ty_tarjeta as enum('Visa','Mastercard');
 create table tarjeta(
-	numero_tarjeta integer primary key,
+	numero_tarjeta bigint primary key,
 	tipo_tarjeta ty_tarjeta not null,
 	codigo_seguridad integer not null UNIQUE,
 	fecha_vencimiento date not null
@@ -70,7 +70,7 @@ create table usuario_free(
 create table usuario_premium(
 	id_usuario integer primary key references usuario(id) on delete restrict on update cascade,
 	fecha_renovacion date not null,
-	tarjeta_asociada integer references tarjeta(numero_tarjeta) on delete restrict on update cascade
+	tarjeta_asociada bigint references tarjeta(numero_tarjeta) on delete restrict on update cascade
 );
 
 create table pago(
@@ -91,7 +91,7 @@ $$
 LANGUAGE plpgsql;
 
 --procedimiento almacenado para insertar tarjeta de pago.
-create function insertartarjeta(numero_tarjeta integer,tipo ty_tarjeta,codigo_seguridad integer, fecha_vencimiento integer)returns void as
+create function insertartarjeta(numero_tarjeta bigint,tipo ty_tarjeta,codigo_seguridad integer, fecha_vencimiento integer)returns void as
 $$
 begin
 	insert into tarjeta values(numero_tarjeta,tipo,codigo_seguridad,fecha_vencimiento);
@@ -101,10 +101,18 @@ LANGUAGE plpgsql;
 
 
 --procedimiento almacenado para insertar a la tabla cuando un usuario añade una cancion a una playlist.
-create function insertaranadircancionplaylist(playlist_asociada integer,usuario_asociado integer,cancion_asociada integer) returns void as
+create function insertaranadircancionplaylist(playlist_asociada integer,usuario_id integer,cancion_asociada integer) returns void as
 $$
+declare 
+id_premium integer;
 begin
-	insert into anadir_cancion_playlist(playlist_asociada,usuario_asociado,cancion_asociada) values(playlist_asociada,usuario_asociado,cancion_asociada);
+	execute format('select usuario_premium.id_usuario from usuario_premium where usuario_premium.id_usuario = usuario_id;')
+	into id_premium;
+	if(id_premium=null) then
+		RAISE NOTICE 'No es premium, no puede eliminar una playlist';
+	else
+		insert into anadir_cancion_playlist(playlist_asociada,usuario_id,cancion_asociada) values(playlist_asociada,usuario_id,cancion_asociada);
+	end if;
 end;
 $$
 LANGUAGE plpgsql;
@@ -171,7 +179,7 @@ LANGUAGE plpgsql;
 
 
 --Proceso almacenado para insertar un usuario.
-create function insertarusuario(nombre text,correo text,contrasena text,pais text,sexo tipo_sexo,tipo text, tarjeta_numero integer)returns void as
+create function insertarusuario(nombre text,correo text,contrasena text,pais text,sexo tipo_sexo,tipo text, tarjeta_numero bigint)returns void as
 $$
 declare
 id_usuario integer;

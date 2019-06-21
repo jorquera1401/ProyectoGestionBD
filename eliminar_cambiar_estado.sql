@@ -30,4 +30,23 @@ end;
 $$
 LANGUAGE plpgsql;
 
-
+create function eliminarusuario(nombre text)returns void as
+$$
+declare
+id_usuario integer;
+id_premium integer;
+begin
+	execute format('select usuario.id from usuario where usuario.nombre = nombre_usuario;')
+	into id_usuario;
+	execute format('select usuario_premium.id_usuario from usuario_premium where usuario_premium.id_usuario = id_usuario;')
+	into id_premium;
+	if(id_premium=null)then
+		update usuario_premium set eliminado = true where usuario_premium.id_usuario = id_premium;
+		update usuario set eliminado = true where usuario.id = id_usuario;
+	else
+		update usuario_free set eliminado = true where usuario_free.id_usuario = id_usuario;
+		update usuario set eliminado = true where usuario.id = id_usuario;
+	end if;			
+end;
+$$
+LANGUAGE plpgsql;

@@ -30,5 +30,3 @@ begin
 end;
 $$
 language plpgsql;
-
-select getPlpaylist('Cumbia');

@@ -116,7 +116,7 @@ begin
 	execute format('select usuario_premium.id_usuario from usuario_premium where usuario_premium.id_usuario = usuario_id;')
 	into id_premium;
 	if(id_premium=null) then
-		RAISE NOTICE 'No es premium, no puede eliminar una playlist';
+		RAISE NOTICE 'No es premium, no puede agregar canciones a  una playlist';
 	else
 		insert into anadir_cancion_playlist(playlist_asociada,usuario_id,cancion_asociada) values(playlist_asociada,usuario_id,cancion_asociada);
 	end if;
@@ -127,14 +127,23 @@ LANGUAGE plpgsql;
 --procedimiento almacenado para insertar playlist.
 create function insertarplaylist(nombre text,tipo text,usuario_asociado integer)returns void as
 $$
+declare 
+id_premium integer;
 begin
-	IF(tipo='Publica') then
-		insert into playlist(nombre,tipo,usuario_asociado) values(nombre,'Publica',usuario_asociado);
-	ELSEIF(tipo='Privada') then
-		insert into playlist(nombre,tipo,usuario_asociado) values(nombre,'Privada',usuario_asociado);
+	execute format('select id_usuario from usuario_premium where id_usuario = usuario_asociado')
+	into id_premium;
+	IF(id_premium=null) then
+		RAISE NOTICE 'Solo usuarios premium pueden crear playlist, cambiate! ';
+	 
 	ELSE
-		insert into playlist(nombre,usuario_asociado) values(nombre,usuario_asociado);
-	end IF;
+		IF(tipo='Publica') then
+			insert into playlist(nombre,tipo,usuario_asociado) values(nombre,'Publica',usuario_asociado);
+		ELSEIF(tipo='Privada') then
+			insert into playlist(nombre,tipo,usuario_asociado) values(nombre,'Privada',usuario_asociado);
+		ELSE
+			insert into playlist(nombre,usuario_asociado) values(nombre,usuario_asociado);
+		end IF;
+	END IF;
 end;
 $$
 LANGUAGE plpgsql;

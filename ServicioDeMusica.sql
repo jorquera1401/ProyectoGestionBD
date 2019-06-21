@@ -101,10 +101,18 @@ LANGUAGE plpgsql;
 
 
 --procedimiento almacenado para insertar a la tabla cuando un usuario añade una cancion a una playlist.
-create function insertaranadircancionplaylist(playlist_asociada integer,usuario_asociado integer,cancion_asociada integer) returns void as
+create function insertaranadircancionplaylist(playlist_asociada integer,usuario_id integer,cancion_asociada integer) returns void as
 $$
+declare 
+id_premium integer;
 begin
-	insert into anadir_cancion_playlist(playlist_asociada,usuario_asociado,cancion_asociada) values(playlist_asociada,usuario_asociado,cancion_asociada);
+	execute format('select usuario_premium.id_usuario from usuario_premium where usuario_premium.id_usuario = usuario_id;')
+	into id_premium;
+	if(id_premium=null) then
+		RAISE NOTICE 'No es premium, no puede eliminar una playlist';
+	else
+		insert into anadir_cancion_playlist(playlist_asociada,usuario_id,cancion_asociada) values(playlist_asociada,usuario_id,cancion_asociada);
+	end if;
 end;
 $$
 LANGUAGE plpgsql;
